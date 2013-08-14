@@ -9,6 +9,7 @@ public class Body {
     
     /** Represents the body size which can be different based on body type. */
     public enum Size {
+        
         FINE,
         DIMINUTIVE,
         TINY,
@@ -19,6 +20,7 @@ public class Body {
         HUGE,
         GARGANTUAN,
         COLOSSAL;
+        
     }
     
 }

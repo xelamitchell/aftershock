@@ -1,27 +1,35 @@
 package org.bugz.aftershock;
 
+import java.util.Arrays;
+
 /**
- *
+ * Aftershock is a fork of Jake2 (a direct Java port of Quake II / id Tech 2
+ * game engine).
+ * 
  * @author bugz
  */
 public class Aftershock {
     
     public static void main(String[] args) {
         
-        boolean dedicated = false;
+        boolean server = false;
         
-        // Checks command line arguments
-        for(String a : args) {
-            
-            // Checks whether the application is in dedicated mode (Server).
-            if(a.equalsIgnoreCase("-d") || a.equalsIgnoreCase("-dedicated")) {
-//                Com.Printf("Starting in dedicated mode.\n");
-                dedicated = true;
+        // Checks there are arguments
+        if(Arrays.asList(args).contains("-")) {
+        
+            for(String a : args) {
+
+                // Server argument (dedicated mode)
+                if(a.equals("s") || a.equals("server")) {
+    //                logger.info("Starting in dedicated (server) mode.\n");
+                    server = true;
+                }
             }
+
+            // TODO check configured items in properties file
+            // TODO Sets Locale either from arguments or properties
+            
         }
-    	
-    	// TODO check configured items in properties file
-        // TODO Sets Locale either from arguments or properties
         
     }
     

@@ -7,6 +7,17 @@ package org.bugz.aftershock.engine.renderer;
  */
 public class SP2 {
     
+    /**
+     * To ensure that the file being opened is an SP2 sprite, the header must
+     * contain a magic number equal to "IDS2".
+     */
+    private static final int MAGIC_NUMBER = (('2' << 24) + ('S' << 16) + ('D' << 8) + 'I');
+    /**
+     * To ensure that the file being opened is an SP2 sprite, the file version
+     * must be equal to 2.
+     */
+    private static final int VERSION = 2;
+    
     /*
     // little-endian "IDS2"
     public static final int IDSPRITEHEADER = (('2'<<24)+('S'<<16)+('D'<<8)+'I');

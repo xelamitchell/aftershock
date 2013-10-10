@@ -11,7 +11,7 @@ public class MD2 {
      * To ensure that the file being opened is an MD2 model, the header must
      * contain a magic number equal to "IDP2".
      */
-    private static final int MAGIC_NUMBER = (('2'<<24) + ('P'<<16) + ('D'<<8) + 'I');
+    private static final int MAGIC_NUMBER = (('2' << 24) + ('P' << 16) + ('D' << 8) + 'I');
     /**
      * To ensure that the file being opened is an MD2 model, the file version
      * must be equal to 8.

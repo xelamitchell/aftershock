@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Pak {
 
     /**
-     * To ensure that the directory being read is Pak, the header must contain a
+     * To ensure that the directory being read is pak, the header must contain a
      * magic number equal to "PACK".
      */
     private static final Integer MAGIC_NUMBER = (('K' << 24) + ('C' << 16) + ('A' << 8) + 'P');
@@ -23,7 +23,6 @@ public class Pak {
     private static final Integer PACK_SIZE = 64;
     
     private String name;
-    // An access to the pak file itself
     private RandomAccessFile handle;
     private Map<String, PakFile> files;
 
@@ -57,32 +56,34 @@ public class Pak {
     public void addFile(PakFile file) {
         this.files.put(file.getName(), file);
     }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
     
+    /**
+     * Identifies whether a file has the valid pak signature.
+     * 
+     * @param id
+     * @return 
+     */
     public static Boolean isPack(Integer id) {
         return MAGIC_NUMBER.equals(id);
     }
     
     /**
      * Checks whether the pak contains too many files.
-     * <p>
-     * <b>NOTE: Should use {@link #getLength(java.lang.Integer)} to calculate
-     * the actual number of files for the pack before calling this method.</b>
-     * </p>
      * 
-     * @param length
+     * @param size
      * @return 
      */
-    public static Boolean tooManyFiles(Integer length) {
-        return length > MAXIMUM_NUMBER_OF_FILES;
+    public static Boolean isTooBig(Integer size) {
+        return getFileCount(size) > MAXIMUM_NUMBER_OF_FILES;
     }
     
-    public static Integer getLength(Integer length) {
-        return length / PACK_SIZE;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public static Integer getFileCount(Integer size) {
+        return size / PACK_SIZE;
     }
     
 }

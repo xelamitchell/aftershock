@@ -20,12 +20,14 @@ import org.slf4j.LoggerFactory;
  * (non-javadoc)
  * 
  * TODO The manager can do the following operations
- * load(packName) -> Makes it available in memory
+ * initialise() -> loads all packs found in the user's home
+ * load(packName) -> Makes paks available in memory
+ * load(String filename) -> Retrieves a packed resource
  * read(packName) -> Returns RandomAccessFile for streaming information
  * write(packName, data) -> persists information into the pak
  * 
- * TODO Not sure yet if this should be contained within the Pak class so it is
- * completely hidden away by users of that resource
+ * Ideally the pak would be loaded once on startup and could be reloaded by
+ * console command.
  */
 public class PakManager {
     
@@ -51,7 +53,7 @@ public class PakManager {
         // Extracts pack's header information
         Integer id = handle.getInt();
         Integer offset = handle.getInt();
-        Integer length = handle.getInt();
+        Integer size = handle.getInt();
         
         // Validates the pack's contents
         if(!Pak.isPack(id)) {
@@ -59,8 +61,8 @@ public class PakManager {
         }
         
         // The number of files contained within this pack
-        int fileCount = Pak.getLength(length);
-        if(Pak.tooManyFiles(fileCount)) {
+        int fileCount = Pak.getFileCount(size);
+        if(Pak.isTooBig(size)) {
             logger.error("{} has too many files: {} files counted", packName, fileCount);
         }
         
@@ -72,7 +74,7 @@ public class PakManager {
         Map<String, PakFile> files = new HashMap<>(fileCount);
         
         // Extracts the files collected within this pack
-        for(int i = 0; i < Pak.getLength(length); i++) {
+        for(int i = 0; i < Pak.getFileCount(size); i++) {
             
             // Moves the handle's cursor to the beginning of a file
             handle.get(FILE_POSITON);

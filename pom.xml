@@ -4,7 +4,7 @@
 
     <groupId>org.bugz</groupId>
     <artifactId>aftershock</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>aftershock</name>
     <description>Aftershock is the game engine based on Jake2</description>
@@ -73,8 +73,8 @@
         </dependency>
         <dependency>
             <groupId>org.easytesting</groupId>
-            <artifactId>fest-assert</artifactId>
-            <version>1.4</version>
+            <artifactId>fest-assert-core</artifactId>
+            <version>2.0M10</version>
             <scope>test</scope>
         </dependency>
         

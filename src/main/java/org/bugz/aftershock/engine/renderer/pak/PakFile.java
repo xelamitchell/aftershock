@@ -33,14 +33,14 @@ public class PakFile {
     public Integer getLength() {
         return length;
     }
-    
-    public static byte[] getNameSize() {
-        return NAME_DEFINITION;
-    }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    public static byte[] getNameSize() {
+        return NAME_DEFINITION;
     }
     
 }

@@ -1,6 +1,6 @@
 package org.bugz.aftershock.engine.renderer.pak;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * A {@code PakFile} represents a file collected within a {@link Pak}.

@@ -25,30 +25,31 @@ import org.slf4j.LoggerFactory;
  * The code is currently quite nix-specific.
  * 
  * Initialise the subsystems of Aftershock:
- * 1. Check that .aftershock (nix), appdata (lose) is set
- * 2. If not set home up with a basic property file
- * 2a. Ask for aftershock (resource) folder
- * 2b. Write aftershock folder to property file
- * 3. If so read the properties
- * 4. Start subsystems:
- * 4a. Sound
- * 4b. Network
- * 4c. Rendering
+ * 1. If argument -a is passed check against the location
+ * 2. If an aftershock.properties exists then read and setup
+ * 3. If not a real home then
+ * 3a. Check that default .aftershock (nix), appdata (windoze) is set
+ * 3b. If not set home up with a basic property file
+ * 3c. Ask for aftershock (resource) folder
+ * 3d. Write aftershock folder to property file
+ * 4. If so read the properties
+ * 5. Start subsystems:
+ * 5a. Sound
+ * 5b. Network
+ * 5c. Rendering
  */
 public final class Environment {
     
     private static final Logger logger = LoggerFactory.getLogger(Environment.class);
     
-    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
-    public static final String PATH_SEPARATOR = System.getProperty("path.separator");
     public static final String JAVA_VERSION = System.getProperty("java.version");
     
     public static final String OS_ARCHITECTURE = System.getProperty("os.arch");
     public static final String OS_NAME = System.getProperty("os.name");
     
     public static final String HOME_DIRECTORY = System.getProperty("user.home");
-    public static final String AFTERSHOCK_HOME = HOME_DIRECTORY + FILE_SEPARATOR + ".aftershock";
-    public static final String AFTERSHOCK_PROPERTIES = AFTERSHOCK_HOME + FILE_SEPARATOR + "aftershock.properties";
+    public static final String AFTERSHOCK_HOME = HOME_DIRECTORY + File.separator + ".aftershock";
+    public static final String AFTERSHOCK_PROPERTIES = AFTERSHOCK_HOME + File.separator + "aftershock.properties";
     
     private Environment() {}
     
@@ -56,16 +57,30 @@ public final class Environment {
         
         // Check Aftershock home and create it if it does not exist
         File home = new File(AFTERSHOCK_HOME);
-        if(!home.exists()) {
-            boolean created = home.mkdirs();
-            logger.debug("{} created", home.getPath(), created);
+        Boolean homeExists = home.exists();
+        if(!homeExists) {
+            home.mkdirs();
         }
-        else {
-            logger.debug("{} found", home.getPath());
-        }
+        logger.info("{} {}", home.getPath(), (homeExists) ? "found" : "created");
         
         // Copy the default properties into Aftershock home
         File properties = new File(AFTERSHOCK_PROPERTIES);
+        Boolean propertiesExists = properties.exists();
+        if(!propertiesExists) {
+            createProperties(home, properties);
+        }
+        logger.info("aftershock.properties {}", (propertiesExists) ? "found" : "created");
+        
+        
+        
+    }
+    
+    /**
+     * Creates a copy of the aftershock.properties file.
+     * 
+     * @param properties 
+     */
+    private static Boolean createProperties(File home, File properties) {
         
         String templateURI = "/aftershock.properties";
         File template;
@@ -85,17 +100,7 @@ public final class Environment {
             }
         }
         
-    }
-    
-    private File setupHome() {
-        throw new UnsupportedOperationException("Not supported yet!");
-    }
-    
-    /*
-     * Environment does not exist: first run of the application
-     */
-    private void create() {
-        
+        return properties.exists();
     }
     
     /*

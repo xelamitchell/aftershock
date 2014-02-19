@@ -3,7 +3,7 @@ package org.bugz.aftershock.engine.renderer.pak;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The Quake2 package (.pak) format is a linear compression of a directory

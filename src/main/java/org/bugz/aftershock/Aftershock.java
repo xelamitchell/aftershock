@@ -23,11 +23,13 @@ import org.slf4j.LoggerFactory;
  * Parameters:
  * 
  * -man : Aftershock Manual
- * -b <location> : basedir (can start with an alternative baseq2). Location is
- * the location of the alternative baseq2 directory.
- * -c : Client (starts both a server and client at the same time).
- * -v <level> : Verbose (logs are also output in standard output). Level is an
- * optional parameter to increase or decrease log level
+ * -a <location> : aftershock dir (can start with an alternative aftershock).
+ * Location is the location of the alternative aftershock directory from which
+ * the application will read properties and resources.
+ * -s : Server (starts application as Server). Application runs as client by
+ * default.
+ * -v <level> : Verbosity (logs are also output in standard output). Level is an
+ * optional parameter to increase or decrease log level.
  * -version : Version
  */
 public class Aftershock {
@@ -41,15 +43,18 @@ public class Aftershock {
         // Checks there are arguments
         for(String argument : args) {
 
+            // TODO may have to split arguments by space as they will be in the
+            // format: aftershock -<arguments> <parameters>
+            
             // Server argument (dedicated mode)
-            if(argument.equals("-s")) {
+            if(argument.contains("s")) {
                 logger.debug("Starting in dedicated (server) mode...");
                 server = true;
             }
         }
 
         // TODO check configured items in properties file
-        // TODO Sets Locale either from arguments or properties
+        // TODO sets Locale either from arguments or properties
         if(!server) {
             logger.debug("Starting in client mode...");
             Splash dataDialog = new Splash();

@@ -9,15 +9,15 @@ import javax.swing.JLabel;
  *
  * @author bugz
  */
-public class AClient {
+public class Client {
 
     private static final Dimension PREFFERED_DIMENSION = new Dimension(400, 100);
     
-    private JFrame frame;
+    private final JFrame frame;
 
-    public AClient() {
+    public Client() {
 
-        frame = new JFrame("Aftershock - Bugz.com");
+        frame = new JFrame("Aftershock - bugz.com");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(new JLabel(), BorderLayout.CENTER);
         frame.pack();

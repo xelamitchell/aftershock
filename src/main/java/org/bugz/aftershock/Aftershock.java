@@ -1,19 +1,13 @@
 package org.bugz.aftershock;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.logging.Level;
+import static org.bugz.aftershock.engine.Mode.CLIENT;
+import static org.bugz.aftershock.engine.Mode.SERVER;
+
 import org.bugz.aftershock.client.splash.Splash;
+import org.bugz.aftershock.engine.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Aftershock is a fork of Jake2 (a direct Java port of Quake II / id Tech 2
- * game engine).
- *
- * @author bugz
- */
 /*
  * (non-javadoc)
  * 
@@ -32,13 +26,19 @@ import org.slf4j.LoggerFactory;
  * optional parameter to increase or decrease log level.
  * -version : Version
  */
+/**
+ * Aftershock is a rewrite of <a href="http://bytonic.de/index.html">Jake2</a>
+ * (a direct Java port of Quake II / id Tech 2 C game engine codebase).
+ *
+ * @author bugz
+ */
 public class Aftershock {
 
     private static final Logger logger = LoggerFactory.getLogger(Aftershock.class);
     
     public static void main(String[] args) {
 
-        boolean server = false;
+        Mode mode = CLIENT;
 
         // Checks there are arguments
         for(String argument : args) {
@@ -49,19 +49,24 @@ public class Aftershock {
             // Server argument (dedicated mode)
             if(argument.contains("s")) {
                 logger.debug("Starting in dedicated (server) mode...");
-                server = true;
+                mode = SERVER;
             }
         }
 
+        logger.debug("Starting in {} mode...", mode.name().toLowerCase());
+        
         // TODO check configured items in properties file
         // TODO sets Locale either from arguments or properties
-        if(!server) {
-            logger.debug("Starting in client mode...");
-            Splash dataDialog = new Splash();
-            dataDialog.setVisible(true);
+        Splash splash = null;
+        if(SERVER == mode) {
+            splash = new Splash();
+            splash.setVisible(true);
         }
 
-        Environment.initialise();
+        // TODO Consider injection
+        Environment environment = new Environment();
+        environment.addPropertyChangeListener("update", splash);
+        environment.initialise();
         
         Boolean running = true;
 
@@ -80,6 +85,11 @@ public class Aftershock {
 //            oldTime = newTime;
 //
 //        }
+        
+        if(splash != null) {
+            splash.dispose();
+        }
+        
     }
-
+    
 }

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * 
  * TODO The manager can do the following operations
  * initialise() -> loads all packs found in the user's home
- * load(packName) -> Makes paks available in memory
+ * load(packName) -> Makes a specific pak available in memory
  * load(String filename) -> Retrieves a packed resource
  * read(packName) -> Returns RandomAccessFile for streaming information
  * write(packName, data) -> persists information into the pak
@@ -35,11 +35,11 @@ public class PakManager {
     
     private static final String READ = "r";
 
-    private Map<String, Pak> packs = new HashMap<>();
+    private final Map<String, Pak> packs = new HashMap<>();
     
-    public Pak load(String packName) throws FileNotFoundException, IOException {
+    public Pak load(String packname) throws FileNotFoundException, IOException {
         
-        RandomAccessFile pack = new RandomAccessFile(packName, READ);
+        RandomAccessFile pack = new RandomAccessFile(packname, READ);
         ByteBuffer handle;
         try (FileChannel channel = pack.getChannel()) {
             handle = channel.map(FileChannel.MapMode.READ_ONLY, 0, pack.length());
@@ -57,13 +57,13 @@ public class PakManager {
         
         // Validates the pack's contents
         if(!Pak.isPack(id)) {
-            logger.error("{} is not a valid PAK file", packName);
+            logger.error("{} is not a valid PAK file", packname);
         }
         
         // The number of files contained within this pack
         int fileCount = Pak.getFileCount(size);
         if(Pak.isTooBig(size)) {
-            logger.error("{} has too many files: {} files counted", packName, fileCount);
+            logger.error("{} has too many files: {} files counted", packname, fileCount);
         }
         
         // Moves the handle's cursor to the end of the pack's header
@@ -84,7 +84,7 @@ public class PakManager {
             files.put(FILENAME, new PakFile(FILENAME, handle.getInt(), handle.getInt()));
         }
         
-        Pak pak = new Pak(packName, pack, files);
+        Pak pak = new Pak(packname, pack, files);
         logger.info("Loaded {}", pak);
         
         return pak;

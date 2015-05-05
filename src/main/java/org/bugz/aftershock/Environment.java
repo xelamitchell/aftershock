@@ -1,11 +1,21 @@
 package org.bugz.aftershock;
 
+import static org.bugz.aftershock.engine.Mode.CLIENT;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * 2. If an aftershock.properties exists then read and setup
  * 3. If not a real home then
  *   a. Check that default .aftershock (nix), appdata (windoze) is set
- *   b. If not set home up with a basic property file
+ *   b. If not, set home up with a basic property file
  *   c. Ask for aftershock (resource) folder
  *   d. Write aftershock folder to property file
  * 4. If so read the properties
@@ -48,47 +58,61 @@ public final class Environment {
     public static final String OS_NAME = System.getProperty("os.name");
     
     public static final String HOME_DIRECTORY = System.getProperty("user.home");
+    /*
+     * (non-javadoc)
+     * 
+     * TODO home notation ('.' or hidden) is based on the OS running the
+     * software.
+     */
     public static final String AFTERSHOCK_HOME = HOME_DIRECTORY + File.separator + ".aftershock";
-    public static final String AFTERSHOCK_PROPERTIES = AFTERSHOCK_HOME + File.separator + "aftershock.properties";
+    public static final String AFTERSHOCK_PROPERTIES_NAME = "aftershock.properties";
+    public static final String AFTERSHOCK_PROPERTIES_PATH = AFTERSHOCK_HOME + File.separator + AFTERSHOCK_PROPERTIES_NAME;
     
-    private Environment() {}
+    private final Properties properties = new Properties();
     
-    public static void initialise() {
+    private final PropertyChangeSupport listeners;
+    
+    public Environment() {
+        this.listeners = new PropertyChangeSupport(this);
+    }
+    
+    public void initialise() {
         
-        // Check Aftershock home and create it if it does not exist
+//        sleep();
+        
         File home = new File(AFTERSHOCK_HOME);
-        Boolean homeExists = home.exists();
-        if(!homeExists) {
+        if(!home.exists()) {
             home.mkdirs();
         }
-        logger.info("{} {}", home.getPath(), (homeExists) ? "found" : "created");
+        logger.info("{} {}", home.getPath(), (home.exists()) ? "found" : "created");
+        listeners.firePropertyChange("update", null, home.getPath() + " " + ((home.exists()) ? "found" : "created"));
+//        sleep();
         
         // Copy the default properties into Aftershock home
-        File properties = new File(AFTERSHOCK_PROPERTIES);
-        Boolean propertiesExists = properties.exists();
-        if(!propertiesExists) {
-            createProperties(home, properties);
+        File configuration = new File(AFTERSHOCK_PROPERTIES_PATH);
+        if(!configuration.exists()) {
+            create(home, configuration);
         }
-        logger.info("aftershock.properties {}", (propertiesExists) ? "found" : "created");
+        logger.info("aftershock.properties {}", (configuration.exists()) ? "found" : "created");
+        listeners.firePropertyChange("update", null, configuration.getPath() + " " + ((configuration.exists()) ? "found" : "created"));
+//        sleep();
         
-        
+        setup();
+        logger.debug("{}", properties);
+//        sleep();
         
     }
     
-    /**
-     * Creates a copy of the aftershock.properties file.
-     * 
-     * @param properties 
-     */
-    private static Boolean createProperties(File home, File properties) {
+    //Creates a copy of the aftershock.properties template.
+    private Boolean create(File home, File properties) {
         
-        String templateURI = "/aftershock.properties";
+        String uri = "/aftershock.properties";
         File template;
         try {
-            template = new File(Environment.class.getResource(templateURI).toURI());
+            template = new File(Environment.class.getResource(uri).toURI());
         } catch(URISyntaxException urise) {
             logger.error("Unable to load aftershock.properties template", urise);
-            template = new File(templateURI);
+            template = new File(uri);
         }
         
         if(template.exists()) {
@@ -103,11 +127,70 @@ public final class Environment {
         return properties.exists();
     }
     
-    /*
-     * Environment exists so we load properties
-     */
+    // Load environment from an existing aftershock.properties file.
     private void setup() {
         
+        File configuration = new File(AFTERSHOCK_PROPERTIES_PATH);
+        
+        try(FileInputStream input = new FileInputStream(configuration)) {
+            properties.load(input);
+        } catch (IOException ioe) {
+            logger.warn("Unable to load {}.", AFTERSHOCK_PROPERTIES_PATH, ioe);
+        }
+        
+        // Set property defaults.
+        
+        final String AFTERSHOCK_RESOURCES = "aftershock.resources";
+        if(StringUtils.isEmpty(properties.getProperty(AFTERSHOCK_RESOURCES))) {
+
+            final String AFTERSHOCK_RESOURCES_PATH = AFTERSHOCK_HOME + File.separator + "resources";
+            properties.setProperty(AFTERSHOCK_RESOURCES, AFTERSHOCK_RESOURCES_PATH);
+
+            // Create the resource folder
+            File resources = new File(AFTERSHOCK_RESOURCES_PATH);
+            if(!resources.exists()) {
+                resources.mkdirs();
+                logger.debug("Resource folder successfully created.");
+            }
+        }
+        
+        final String AFTERSHOCK_MODE = "aftershock.mode";
+        if(StringUtils.isEmpty(properties.getProperty(AFTERSHOCK_MODE))) {
+            properties.setProperty(AFTERSHOCK_MODE, CLIENT.name());
+        }
+        
+    }
+    
+    private void sleep() {
+        
+        try {
+            Thread.sleep(350);
+        } catch(InterruptedException ie) {
+            logger.warn("Sleep interrupted.", ie);
+        }
+    }
+    
+    public List<PropertyChangeListener> getPropertyChangeListeners() {
+        return Arrays.asList(listeners.getPropertyChangeListeners());
+    }
+
+    public List<PropertyChangeListener> getPropertyChangeListeners(String property) {
+        return Arrays.asList(listeners.getPropertyChangeListeners(property));
+    }
+    
+    public synchronized void setPropertyChangeListeners(Map<String, PropertyChangeListener> listeners) {
+        
+        for(String key : listeners.keySet()) {
+            addPropertyChangeListener(key, listeners.get(key));
+        }
+    }
+    
+    public synchronized void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+        this.listeners.addPropertyChangeListener(property, listener);
+    }
+
+    public synchronized void removePropertyChangeListener(String property, PropertyChangeListener listener) {
+        this.listeners.removePropertyChangeListener(property, listener);
     }
     
 }

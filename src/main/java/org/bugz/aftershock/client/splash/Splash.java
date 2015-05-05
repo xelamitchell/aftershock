@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,7 +18,7 @@ import javax.swing.WindowConstants;
  * 
  * @author bugz
  */
-public class Splash extends JDialog {
+public class Splash extends JDialog implements PropertyChangeListener {
     
     private static final Dimension PREFFERED_DIMENSION = new Dimension(400, 100);
     
@@ -82,5 +84,10 @@ public class Splash extends JDialog {
     public void setStatus(String status) {
         this.status.setText(status);
     }
-    
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        setStatus(String.valueOf(event.getNewValue()));
+    }
+
 }

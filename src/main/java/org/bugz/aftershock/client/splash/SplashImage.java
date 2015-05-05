@@ -23,7 +23,7 @@ public class SplashImage extends Canvas {
         setSize(400, 200);
         
         try {
-            image = ImageIO.read(getClass().getResource("/images/splash.png"));
+            image = ImageIO.read(getClass().getResourceAsStream("/images/splash.png"));
         } catch(Exception e) {
             logger.warn("Unable to find splash image", e);
         }

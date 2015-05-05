@@ -13,8 +13,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class Pak {
 
-    /**
-     * To ensure that the directory being read is pak, the header must contain a
+    /*
+     * (non-javadoc)
+     * 
+     * To ensure that the directory being read is PAK, the header must contain a
      * magic number equal to "PACK".
      */
     private static final Integer MAGIC_NUMBER = (('K' << 24) + ('C' << 16) + ('A' << 8) + 'P');

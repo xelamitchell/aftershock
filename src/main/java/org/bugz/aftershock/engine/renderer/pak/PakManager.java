@@ -12,10 +12,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author bugz
- */
 /*
  * (non-javadoc)
  * 
@@ -28,6 +24,10 @@ import org.slf4j.LoggerFactory;
  * 
  * Ideally the pak would be loaded once on startup and could be reloaded by
  * console command.
+ */
+/**
+ *
+ * @author bugz
  */
 public class PakManager {
     

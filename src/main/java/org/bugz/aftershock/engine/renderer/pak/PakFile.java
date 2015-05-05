@@ -12,9 +12,9 @@ public class PakFile {
     private static final Integer NAME_SIZE = 56;
     private static final byte[] NAME_DEFINITION = new byte[NAME_SIZE];
     
-    private String name;
-    private Integer position;
-    private Integer length;
+    private final String name;
+    private final Integer position;
+    private final Integer length;
 
     public PakFile(String name, Integer position, Integer length) {
         this.name = name;

@@ -9,11 +9,6 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Holds environmental information for the engine.
- * 
- * @author bugz
- */
 /*
  * (non-javadoc)
  * 
@@ -28,15 +23,20 @@ import org.slf4j.LoggerFactory;
  * 1. If argument -a is passed check against the location
  * 2. If an aftershock.properties exists then read and setup
  * 3. If not a real home then
- * 3a. Check that default .aftershock (nix), appdata (windoze) is set
- * 3b. If not set home up with a basic property file
- * 3c. Ask for aftershock (resource) folder
- * 3d. Write aftershock folder to property file
+ *   a. Check that default .aftershock (nix), appdata (windoze) is set
+ *   b. If not set home up with a basic property file
+ *   c. Ask for aftershock (resource) folder
+ *   d. Write aftershock folder to property file
  * 4. If so read the properties
  * 5. Start subsystems:
- * 5a. Sound
- * 5b. Network
- * 5c. Rendering
+ *   a. Sound
+ *   b. Network
+ *   c. Rendering
+ */
+/**
+ * Holds environmental information for the engine.
+ * 
+ * @author bugz
  */
 public final class Environment {
     
